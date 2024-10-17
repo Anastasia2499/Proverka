@@ -13,6 +13,14 @@ def initiate_db():
     price INTEGER NOT NULL
     );
     ''')
+
+    connetion.commit()
+
+
+def get_all_products():
+    initiate_db()
+    connetion = sqlite3.connect('Products.db')
+    cursor = connetion.cursor()
     for i in range(1, 5):
         title_ = f'Продукт{i}'
         description_ = f'Описание{i}'
@@ -20,14 +28,7 @@ def initiate_db():
         check_price = cursor.execute('SELECT id FROM Users WHERE title = ?', (title_,))
         if check_price.fetchone() is None:
             cursor.execute("INSERT INTO Users (title, description, price) VALUES (?, ?, ?)",
-                       (f'{title_}', f'{description_}', f'{price_}'))
-        connetion.commit()
-
-
-def get_all_products():
-    initiate_db()
-    connetion = sqlite3.connect('Products.db')
-    cursor = connetion.cursor()
+                           (f'{title_}', f'{description_}', f'{price_}'))
     price_list = cursor.execute('SELECT * FROM Users')
     message = []
     for user in price_list:
