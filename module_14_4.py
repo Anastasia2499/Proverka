@@ -35,6 +35,7 @@ buy_kb = InlineKeyboardMarkup(
     ]
 )
 
+
 class UserState(StatesGroup):
      age = State()
      growth = State()
@@ -43,9 +44,10 @@ class UserState(StatesGroup):
 
 @dp.message_handler(text="Купить")
 async def get_buying_list(message):
+    all_products = get_all_products()
     for i in range(1, 5):
         with open(f'files/{i}.png', 'rb') as img:
-            await message.answer_photo(img, initiate_db(i, i, i * 100))
+            await message.answer_photo(img, all_products[i-1])
     await message.answer("Выберите продукт для покупки:", reply_markup=buy_kb)
 
 
@@ -58,6 +60,11 @@ async def back(call):
 @dp.message_handler(text='Рассчитать')
 async def main_menu(message):
     await message.answer('Выберите опцию:', reply_markup=kb2)
+
+
+@dp.message_handler(text="Информация")
+async def info_menu(message):
+    await message.answer('Информация о боте')
 
 
 @dp.callback_query_handler(text='formulas')

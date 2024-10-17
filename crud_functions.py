@@ -1,27 +1,42 @@
 import sqlite3
 
-connetion = sqlite3.connect('Products.db')
-cursor = connetion.cursor()
 
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS Users(
-id INTEGER PRIMARY KEY,
-title TEXT NOT NULL,
-description TEXT,
-price INTEGER NOT NULL
-);
-''')
+def initiate_db():
+    connetion = sqlite3.connect('Products.db')
+    cursor = connetion.cursor()
 
-
-def initiate_db(title_, description_, price_):
-    check_initiate = cursor.execute('SELECT * FROM Users WHERE id == ?', (title_,))
-    if check_initiate.fetchone() is None:
-        cursor.execute("INSERT INTO Users (title, description, price) VALUES (?, ?, ?)",
-                   (f'Продукт:{title_}', f'Название:{description_}', price_))
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS Users(
+    id INTEGER PRIMARY KEY,
+    title TEXT NOT NULL,
+    description TEXT,
+    price INTEGER NOT NULL
+    );
+    ''')
+    for i in range(1, 5):
+        title_ = f'Продукт{i}'
+        description_ = f'Описание{i}'
+        price_ = i * 100
+        check_price = cursor.execute('SELECT id FROM Users WHERE title = ?', (title_,))
+        if check_price.fetchone() is None:
+            cursor.execute("INSERT INTO Users (title, description, price) VALUES (?, ?, ?)",
+                       (f'{title_}', f'{description_}', f'{price_}'))
         connetion.commit()
-    return f'Название: Product {title_} | Описание: описание {description_} | Цена: {price_}'
+
+
+def get_all_products():
+    initiate_db()
+    connetion = sqlite3.connect('Products.db')
+    cursor = connetion.cursor()
+    price_list = cursor.execute('SELECT * FROM Users')
+    message = []
+    for user in price_list:
+        message.append(f'Название: {user[1]} | Описание: {user[2]} | Стоимость: {user[3]} \n')
+    connetion.commit()
+    return message
 
 
 
-connetion.commit()
+
+# connetion.commit()
 # connetion.close()
